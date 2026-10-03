@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>مكتبة محسن الخاصة</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial,sans-serif;
+    color:white;
+    background:
+    radial-gradient(circle at 20% 20%,#263d88,transparent 35%),
+    radial-gradient(circle at 80% 80%,#661f78,transparent 35%),
+    #070a12;
+}
+
+.container{
+    width:94%;
+    max-width:1100px;
+    margin:40px auto;
+    padding:30px;
+    border-radius:25px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.15);
+    backdrop-filter:blur(20px);
+    box-shadow:0 20px 70px rgba(0,0,0,.5);
+}
+
+h1{
+    text-align:center;
+    font-size:35px;
+    margin-bottom:8px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#bbb;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    border-radius:12px;
+    border:1px solid #ffffff22;
+    background:#101522;
+    color:white;
+    font-size:16px;
+}
+
+button{
+    border:0;
+    border-radius:12px;
+    padding:13px 18px;
+    margin-top:12px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.login-btn{
+    width:100%;
+    background:#6c63ff;
+    color:white;
+}
+
+.tools{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:20px 0;
+}
+
+.tools input{
+    flex:1;
+    min-width:220px;
+}
+
+.add{
+    background:#6c63ff;
+    color:white;
+}
+
+.logout{
+    background:#444;
+    color:white;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+
+.video-card{
+    background:#0d111d;
+    padding:12px;
+    border-radius:18px;
+    border:1px solid #ffffff18;
+}
+
+video{
+    width:100%;
+    border-radius:12px;
+    background:#000;
+}
+
+.video-name{
+    margin:10px 0;
+    font-weight:bold;
+    word-break:break-word;
+}
+
+.delete{
+    background:#e53935;
+    color:white;
+}
+
+#app{
+    display:none;
+}
+
+.footer{
+    text-align:center;
+    margin-top:30px;
+    color:#aaa;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- تسجيل الدخول -->
+<div class="container" id="login">
+
+<h1>🔐 مكتبة محسن الخاصة</h1>
+
+<p class="subtitle">
+أدخل كلمة السر للدخول
+</p>
+
+<input
+id="password"
+type="password"
+placeholder="اكتب كلمة السر">
+
+<button
+class="login-btn"
+onclick="login()">
+دخول
+</button>
+
+<p class="footer">
+تم تصميمه بواسطة محسن
+</p>
+
+</div>
+
+
+<!-- الموقع -->
+<div class="container" id="app">
+
+<h1>🎬 مكتبة الفيديو</h1>
+
+<p class="subtitle">
+أضف عددًا غير محدود من الفيديوهات
+</p>
+
+<div class="tools">
+
+<input
+id="videoFiles"
+type="file"
+accept="video/*"
+multiple>
+
+<button
+class="add"
+onclick="addVideos()">
+➕ إضافة فيديوهات
+</button>
+
+<button
+class="logout"
+onclick="logout()">
+خروج
+</button>
+
+</div>
+
+<div
+class="grid"
+id="videoList">
+</div>
+
+<div class="footer">
+© 2026 — تم تصميمه بواسطة محسن
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   كلمة السر
+========================= */
+
+const PASSWORD = "3/5/2007";
+
+
+/* =========================
+   تسجيل الدخول
+========================= */
+
+function login(){
+
+    const password =
+    document.getElementById("password").value;
+
+    if(password === PASSWORD){
+
+        document.getElementById("login")
+        .style.display = "none";
+
+        document.getElementById("app")
+        .style.display = "block";
+
+        renderVideos();
+
+    }else{
+
+        alert("❌ كلمة السر غير صحيحة");
+
+    }
+
+}
+
+
+/* =========================
+   تسجيل الخروج
+========================= */
+
+function logout(){
+
+    document.getElementById("app")
+    .style.display = "none";
+
+    document.getElementById("login")
+    .style.display = "block";
+
+    document.getElementById("password")
+    .value = "";
+
+}
+
+
+/* =========================
+   تحميل الفيديوهات
+========================= */
+
+let videos =
+JSON.parse(
+localStorage.getItem("mohsenVideos") || "[]"
+);
+
+
+/* =========================
+   إضافة الفيديوهات
+========================= */
+
+function addVideos(){
+
+    const files =
+    [...document.getElementById("videoFiles").files];
+
+    if(files.length === 0){
+
+        alert("اختار فيديو أولًا");
+
+        return;
+    }
+
+    files.forEach(file => {
+
+        const reader =
+        new FileReader();
+
+        reader.onload = function(){
+
+            videos.push({
+
+                name:file.name,
+
+                data:reader.result
+
+            });
+
+            localStorage.setItem(
+                "mohsenVideos",
+                JSON.stringify(videos)
+            );
+
+            renderVideos();
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
+
+    document.getElementById("videoFiles")
+    .value = "";
+
+}
+
+
+/* =========================
+   عرض الفيديوهات
+========================= */
+
+function renderVideos(){
+
+    const list =
+    document.getElementById("videoList");
+
+    list.innerHTML = "";
+
+    videos.forEach((video,index)=>{
+
+        const card =
+        document.createElement("div");
+
+        card.className =
+        "video-card";
+
+        card.innerHTML = `
+
+        <video
+        controls
+        playsinline
+        src="${video.data}">
+        </video>
+
+        <div class="video-name">
+        ${escapeHTML(video.name)}
+        </div>
+
+        <button
+        class="delete"
+        onclick="deleteVideo(${index})">
+        🗑️ حذف الفيديو
+        </button>
+
+        `;
+
+        list.appendChild(card);
+
+    });
+
+}
+
+
+/* =========================
+   حذف فيديو
+========================= */
+
+function deleteVideo(index){
+
+    if(confirm("هل تريد حذف هذا الفيديو؟")){
+
+        videos.splice(index,1);
+
+        localStorage.setItem(
+            "mohsenVideos",
+            JSON.stringify(videos)
+        );
+
+        renderVideos();
+
+    }
+
+}
+
+
+/* =========================
+   حماية اسم الفيديو
+========================= */
+
+function escapeHTML(text){
+
+    return text.replace(
+        /[&<>"']/g,
+        function(character){
+
+            return {
+
+                "&":"&amp;",
+                "<":"&lt;",
+                ">":"&gt;",
+                '"':"&quot;",
+                "'":"&#039;"
+
+            }[character];
+
+        }
+    );
+
+}
+
+</script>
+
+</body>
+</html>
